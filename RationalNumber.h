@@ -56,6 +56,8 @@ public:
     bool isInteger();
     RationalNumber fromInteger(const IntegerNumber& other);
     IntegerNumber toInteger(const RationalNumber& other);
+    IntegerNumber reducedtoInteger();
+
     RationalNumber add(const RationalNumber& other);
     RationalNumber subtract(const RationalNumber& other);
     RationalNumber multiply(const RationalNumber& other);

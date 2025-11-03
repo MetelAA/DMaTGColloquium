@@ -32,20 +32,25 @@ const std::vector<uint8_t>& IntegerNumber::getNumbers() noexcept {
     return this->number->getNumbers();
 }
 
-IntegerNumber IntegerNumber::multiply(const NaturalNumber &other) {
-    uint8_t numberSign = this->getSign();
-    if (numberSign == 0 || other.isEqualZero()) {
+// Z-8: Умножение целых чисел.
+IntegerNumber IntegerNumber::multiply(const IntegerNumber &other) const {
+    // getSign() дает ноль, если число равно нулю. Поэтому юзаю его.
+    // Тут простая проверка, если первое или второе число ноль - умножение равно нулю.
+    u_int8_t numberSign = this->getSign();
+    u_int8_t otherSign = other.getSign();
+    if (numberSign == 0 || otherSign == 0) {
         return IntegerNumber(0);
     }
 
+    // Берем модуль числа для умножения и умножаем числа.
     NaturalNumber numberAbs = this->abs();
-    NaturalNumber multiplyAbs = numberAbs.multiply(other);
+    NaturalNumber otherAbs = other.abs();
+    NaturalNumber multiplyAbs = numberAbs.multiply(otherAbs);
 
-    bool resultIsNegative = false;
-    if (numberSign == 1) {
-        resultIsNegative = true;
-    }
-    
+    // Вспоминаем, какой знак был у нашего числа.
+    // Отрицательное, если знаки у обоих чисел не одинаковые.
+    bool resultIsNegative = numberSign != otherSign;
+
     const std::vector<uint8_t> &multiplyDigits = multiplyAbs.getNumbers();
     IntegerNumber result = IntegerNumber(multiplyDigits, resultIsNegative);
 
