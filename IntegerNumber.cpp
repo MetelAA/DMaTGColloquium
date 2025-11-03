@@ -32,5 +32,22 @@ const std::vector<uint8_t>& IntegerNumber::getNumbers() noexcept {
     return this->number->getNumbers();
 }
 
+IntegerNumber IntegerNumber::multiply(const NaturalNumber &other) {
+    uint8_t numberSign = this->getSign();
+    if (numberSign == 0 || other.isEqualZero()) {
+        return IntegerNumber(0);
+    }
 
+    NaturalNumber numberAbs = this->abs();
+    NaturalNumber multiplyAbs = numberAbs.multiply(other);
 
+    bool resultIsNegative = false;
+    if (numberSign == 1) {
+        resultIsNegative = true;
+    }
+    
+    const std::vector<uint8_t> &multiplyDigits = multiplyAbs.getNumbers();
+    IntegerNumber result = IntegerNumber(multiplyDigits, resultIsNegative);
+
+    return result;
+};
