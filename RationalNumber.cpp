@@ -92,7 +92,7 @@ RationalNumber RationalNumber::fromInteger(const IntegerNumber &other) {
 }
 
 // Q-4: Преобразование сокращенного дробного в целое.
-IntegerNumber RationalNumber::reducedtoInteger() {
+IntegerNumber RationalNumber::reducedToInteger() {
     // Проверка, что оно реально может быть целым (представимо как целое). 
     // Если нет, то толку продолжать...
     if (!this->isInteger()) {
