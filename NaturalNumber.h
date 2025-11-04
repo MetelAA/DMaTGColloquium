@@ -37,20 +37,20 @@ public:
 
     std::string toString() noexcept;
     const std::vector<uint8_t>& getNumbers() noexcept;
-    uint8_t cmp(const NaturalNumber* other);
-    bool isEqualZero();
+    uint8_t cmp(const NaturalNumber* other) const;
+    bool isEqualZero() const;
     void increment();
-    NaturalNumber add(const NaturalNumber& other);
-    NaturalNumber subtract(const NaturalNumber& other);
-    NaturalNumber multiplyByDigit(std::size_t b);
-    NaturalNumber multiplyByPowerOfTen(std::size_t k);
-    NaturalNumber multiply(const NaturalNumber& other);
-    NaturalNumber subtractMultiplied(const NaturalNumber& other, std::size_t c);
-    NaturalNumber getFirstDivisionDigit(const NaturalNumber& other);
-    NaturalNumber quotient(const NaturalNumber& other);
-    NaturalNumber remainder(const NaturalNumber& other);
-    NaturalNumber GCD(const NaturalNumber& other);
-    NaturalNumber LCM(const NaturalNumber& other);
+    NaturalNumber ad(const NaturalNumber& other) const;
+    NaturalNumber subtract(const NaturalNumber& other) const;
+    NaturalNumber multiplyByDigit(std::size_t b) const;
+    NaturalNumber multiplyByPowerOfTen(std::size_t k) const;
+    NaturalNumber multiply(const NaturalNumber& other) const;
+    NaturalNumber subtractMultiplied(const NaturalNumber& other, std::size_t c) const;
+    NaturalNumber getFirstDivisionDigit(const NaturalNumber& other) const;
+    NaturalNumber quotient(const NaturalNumber& other) const;
+    NaturalNumber remainder(const NaturalNumber& other) const;
+    NaturalNumber GCD(const NaturalNumber& other) const;
+    NaturalNumber LCM(const NaturalNumber& other) const;
 
 
 private:

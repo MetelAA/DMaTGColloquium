@@ -38,20 +38,20 @@ public:
     }
 
     const std::vector<RationalNumber>& getCoefficients() noexcept;
-    std::string toString();
-    Polynomial add(const Polynomial& other);
-    Polynomial subtract(const Polynomial& other);
-    Polynomial multiplyByRational(const RationalNumber& b);
-    Polynomial multiplyByXInKPower(std::size_t k);
-    RationalNumber getLeadingCoefficient();
-    std::size_t getDegree();
-    Polynomial factorOut();
-    Polynomial multiply(const Polynomial& other);
-    Polynomial quotient(const Polynomial& other);
-    Polynomial remainder(const Polynomial& other);
-    Polynomial GCD(const Polynomial& other);
-    Polynomial derivative();
-    Polynomial makeSquareFree();
+    std::string toString() const;
+    Polynomial add(const Polynomial& other) const;
+    Polynomial subtract(const Polynomial& other) const;
+    Polynomial multiplyByRational(const RationalNumber& b) const;
+    Polynomial multiplyByXInKPower(std::size_t k) const;
+    RationalNumber getLeadingCoefficient() const;
+    std::size_t getDegree() const;
+    Polynomial factorOut() const;
+    Polynomial multiply(const Polynomial& other) const;
+    Polynomial quotient(const Polynomial& other) const;
+    Polynomial remainder(const Polynomial& other) const;
+    Polynomial GCD(const Polynomial& other) const;
+    Polynomial derivative() const;
+    Polynomial makeSquareFree() const;
 
 private:
     std::vector<RationalNumber> coefficients;

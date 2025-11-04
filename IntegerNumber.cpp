@@ -5,7 +5,7 @@
 #include "IntegerNumber.h"
 #include "Exceptions/UniversalStringException.h"
 
-bool IntegerNumber::isNegative() noexcept {
+bool IntegerNumber::isNegative() const noexcept {
     return this->isNegativeFlag;
 }
 
@@ -24,13 +24,34 @@ IntegerNumber::IntegerNumber(long long int a) {
     this->number = new NaturalNumber(isNegativeFlag ? a*(-1) : a);
 }
 
-std::string IntegerNumber::toString() {
+std::string IntegerNumber::toString() const {
     return (isNegativeFlag ? "-" : "") + this->number->toString();
 }
 
-const std::vector<uint8_t>& IntegerNumber::getNumbers() noexcept {
+const std::vector<uint8_t>& IntegerNumber::getNumbers() const noexcept {
     return this->number->getNumbers();
 }
 
+// Z-8: Умножение целых чисел.
+IntegerNumber IntegerNumber::multiply(const IntegerNumber &other) const {
+    // getSign() дает ноль, если число равно нулю. Поэтому юзаю его.
+    // Тут простая проверка, если первое или второе число ноль - умножение равно нулю.
+    uint8_t numberSign = this->getSign();
+    uint8_t otherSign = other.getSign();
+    if (numberSign == 0 || otherSign == 0) {
+        return IntegerNumber("0");
+    }
+
+    // Берем модуль числа для умножения и умножаем числа.
+    NaturalNumber numberAbs = this->abs();
+    NaturalNumber otherAbs = other.abs();
+    NaturalNumber multiplyAbs = numberAbs.multiply(otherAbs);
+
+    // Вспоминаем, какой знак был у нашего числа.
+    // Отрицательное, если знаки у обоих чисел не одинаковые.
+    bool resultIsNegative = numberSign != otherSign;
+
+    return IntegerNumber(multiplyAbs.getNumbers(), resultIsNegative);
+};
 
 

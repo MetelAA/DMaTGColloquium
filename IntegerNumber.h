@@ -42,19 +42,19 @@
         }
 
 
-        bool isNegative() noexcept;
-        std::string toString();
-        const std::vector<uint8_t>& getNumbers() noexcept;
-        NaturalNumber abs();
-        uint8_t getSign();
-        IntegerNumber negate();
-        IntegerNumber toInteger(const NaturalNumber& other);
-        NaturalNumber toNatural(const IntegerNumber& other);
-        IntegerNumber add(const IntegerNumber& other);
-        IntegerNumber subtract(const IntegerNumber& other);
-        IntegerNumber multiply(const IntegerNumber& other);
-        IntegerNumber quotient(const IntegerNumber& other);
-        IntegerNumber remainder(const IntegerNumber& other);
+        bool isNegative() const noexcept;
+        std::string toString() const;
+        const std::vector<uint8_t>& getNumbers() const noexcept;
+        NaturalNumber abs() const;
+        uint8_t getSign() const;
+        IntegerNumber negate() const;
+        static IntegerNumber toInteger(const NaturalNumber& other);
+        NaturalNumber toNatural(const IntegerNumber& other) const;
+        IntegerNumber add(const IntegerNumber& other) const;
+        IntegerNumber subtract(const IntegerNumber& other) const;
+        IntegerNumber multiply(const IntegerNumber& other) const;
+        IntegerNumber quotient(const IntegerNumber& other) const;
+        IntegerNumber remainder(const IntegerNumber& other) const;
 
 
     private:

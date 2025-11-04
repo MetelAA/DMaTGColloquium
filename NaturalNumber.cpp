@@ -46,3 +46,5 @@ NaturalNumber::NaturalNumber(const std::vector<uint8_t> &CpNumbers) {
         throw UniversalStringException("wrong argument, the vector of numbers should not be empty");
     this->numbers = CpNumbers;
 }
+
+

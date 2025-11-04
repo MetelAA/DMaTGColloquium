@@ -49,17 +49,17 @@ public:
         delete denominator;
     }
 
-    std::string toString();
-    const IntegerNumber& getIntegerNumerator() noexcept;
-    const NaturalNumber& getNaturalDenominator() noexcept;
+    static RationalNumber fromInteger(const IntegerNumber& intNum);
+    std::string toString() const;
+    const IntegerNumber& getIntegerNumerator() const noexcept;
+    const NaturalNumber& getNaturalDenominator() const noexcept;
     void reduce();
-    bool isInteger();
-    RationalNumber fromInteger(const IntegerNumber& other);
-    IntegerNumber toInteger(const RationalNumber& other);
-    RationalNumber add(const RationalNumber& other);
-    RationalNumber subtract(const RationalNumber& other);
-    RationalNumber multiply(const RationalNumber& other);
-    RationalNumber division(const RationalNumber& other);
+    bool isInteger() const;
+    IntegerNumber toInteger(const RationalNumber& other) const;
+    RationalNumber add(const RationalNumber& other) const;
+    RationalNumber subtract(const RationalNumber& other) const;
+    RationalNumber multiply(const RationalNumber& other) const;
+    RationalNumber division(const RationalNumber& other) const;
 
 private:
     IntegerNumber* numerator; //числитель
