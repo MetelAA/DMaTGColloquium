@@ -1,3 +1,0 @@
-D:/clionProj/DMaTGColloquium/cmake-build-debug/CMakeFiles/DMaTGColloquium.dir
-D:/clionProj/DMaTGColloquium/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/clionProj/DMaTGColloquium/cmake-build-debug/CMakeFiles/rebuild_cache.dir
