@@ -40,7 +40,7 @@ public:
     uint8_t cmp(const NaturalNumber* other) const;
     bool isEqualZero() const;
     void increment();
-    NaturalNumber ad(const NaturalNumber& other) const;
+    NaturalNumber add(const NaturalNumber& other) const;
     NaturalNumber subtract(const NaturalNumber& other) const;
     NaturalNumber multiplyByDigit(std::size_t b) const;
     NaturalNumber multiplyByPowerOfTen(std::size_t k) const;
