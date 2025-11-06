@@ -47,4 +47,6 @@ NaturalNumber::NaturalNumber(const std::vector<uint8_t> &CpNumbers) {
     this->numbers = CpNumbers;
 }
 
-
+bool NaturalNumber::isEqualZero() {
+    return numbers.size() == 1 && numbers[0] == 0;
+}
