@@ -101,3 +101,65 @@ IntegerNumber IntegerNumber::remainder(const IntegerNumber &other) const {
 
     return IntegerNumber(dividend.subtract(product).getNumbers(), this->getSign());;
 }
+
+//Z1: Абсолютная величина числа, результат - натуральное
+NaturalNumber IntegerNumber::abs() const{
+    return NaturalNumber(*this->number);
+}
+
+//Z2: Определение положительности числа (2 - положительное, 0 — равное нулю, 1 - отрицательное)
+uint8_t IntegerNumber::getSign() const {
+    if (this->number->isNotEqualZero()) {
+        return 0;
+    }
+    return this->isNegativeFlag ? 1 : 2;
+}
+
+//Z3: Умножение целого на (-1)
+IntegerNumber IntegerNumber::negate() const {
+    return IntegerNumber(this->number->getNumbers(), !this->isNegativeFlag);
+}
+
+//Z4: Преобразование натурального в целое
+IntegerNumber IntegerNumber::toInteger(const NaturalNumber &other) {
+    return IntegerNumber(other.getNumbers(), false);
+}
+
+//Z5: Преобразование целого неотрицательного в натуральное
+NaturalNumber IntegerNumber::toNatural(const IntegerNumber& other) const {
+    if (other.isNegativeFlag) {
+        throw UniversalStringException("to convert an integer to a natural, it must be greater than or equal to 0.");
+    }
+    return NaturalNumber(*other.number);
+}
+
+//Z6: Сложение целых чисел
+IntegerNumber IntegerNumber::add(const IntegerNumber &other) const {
+    NaturalNumber absThis = this->abs();
+    NaturalNumber absOther = other.abs();
+    size_t maxSize = std::max(absThis.getNumbers().size(), absOther.getNumbers().size());
+    std::vector<uint8_t> resultNumbers(maxSize + 1, 0);
+
+    if (this->getSign() == other.getSign()) {
+        NaturalNumber sum = absThis.add(absOther);
+        bool isNeg = this->isNegativeFlag;
+        return IntegerNumber(sum.getNumbers(), isNeg);
+    } else {
+        uint8_t cmp = absThis.cmp(&absOther);
+        if (cmp == 0) {
+            return IntegerNumber(std::vector<uint8_t>{0}, false);
+        } else if (cmp == 2) {
+            NaturalNumber diff = absThis.subtract(absOther);
+            return IntegerNumber(diff.getNumbers(), this->isNegativeFlag);
+        } else {
+            NaturalNumber diff = absOther.subtract(absThis);
+            return IntegerNumber(diff.getNumbers(), other.isNegativeFlag);
+        }
+    }
+}
+
+//Z7: Вычитание целых чисел
+IntegerNumber IntegerNumber::subtract(const IntegerNumber& other) const {
+    IntegerNumber negOther = other.negate();
+    return this->add(negOther);
+}
