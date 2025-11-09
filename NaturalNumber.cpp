@@ -6,7 +6,7 @@
 #include "Exceptions/UniversalStringException.h"
 #include <cmath>
 
-std::string NaturalNumber::toString() noexcept {
+std::string NaturalNumber::toString() {
     if (this->numbers.empty())
         throw UniversalStringException("atypical behavior, the vector of numbers should not be empty");
     std::string result(this->numbers.size(), '0');
@@ -21,6 +21,9 @@ const std::vector<uint8_t> &NaturalNumber::getNumbers() const noexcept {
 }
 
 NaturalNumber::NaturalNumber(unsigned long long int a) {
+    if (a == 0) {
+        this->numbers.push_back(0);
+    }
     while (a > 0) {
         this->numbers.push_back(a % 10);
         a /= 10;
@@ -45,6 +48,11 @@ NaturalNumber::NaturalNumber(const std::vector<uint8_t> &CpNumbers) {
     if (CpNumbers.empty())
         throw UniversalStringException("wrong argument, the vector of numbers should not be empty");
     this->numbers = CpNumbers;
+
+    //проверка лишняя, тк из условия корректности числа такого быть не должно, но во избежание багов от некоторых участиников проекта пусть будет
+    while (this->numbers.size() > 1 && this->numbers.back() == 0) {
+        this->numbers.pop_back();
+    }
 }
 
 
@@ -106,15 +114,13 @@ NaturalNumber NaturalNumber::GCD(const NaturalNumber &other) const {
     }
 
     if (!second_value.isNotEqualZero()) {
-        throw UniversalStringException("can not divide by zero");
+        return first_value;
     }
     // алгоритм Евклида
     while (second_value.isNotEqualZero()) {
-        if (first_value.cmp(&second_value) == 1) {
-            std::swap(first_value, second_value);
-        }
-
-        first_value = first_value.remainder(second_value);
+        NaturalNumber tmp = first_value.remainder(second_value);
+        first_value = second_value;
+        second_value = tmp;
     }
 
     return first_value;
@@ -277,7 +283,7 @@ NaturalNumber NaturalNumber::multiply(const NaturalNumber &other) const {
 
 //N2: Проверка на ноль: если число не равно нулю, то «да» иначе «нет»
 bool NaturalNumber::isNotEqualZero() const {
-    return !(numbers.size() == 1 && numbers[0] == 0);
+    return !(numbers.size() == 1 && numbers[0] == 0)ж
 }
 
 // N9: Вычитание из первого числа меньшего числа, умноженного на цифру.

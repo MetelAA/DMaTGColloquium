@@ -109,7 +109,7 @@ NaturalNumber IntegerNumber::abs() const{
 
 //Z2: Определение положительности числа (2 - положительное, 0 — равное нулю, 1 - отрицательное)
 uint8_t IntegerNumber::getSign() const {
-    if (this->number->isNotEqualZero()) {
+    if (!this->number->isNotEqualZero()) {
         return 0;
     }
     return this->isNegativeFlag ? 1 : 2;

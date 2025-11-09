@@ -35,7 +35,7 @@ public:
         return *this;
     }
 
-    std::string toString() noexcept;
+    std::string toString();
     const std::vector<uint8_t>& getNumbers() const noexcept;
     uint8_t cmp(const NaturalNumber* other) const;
     bool isNotEqualZero() const;
