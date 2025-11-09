@@ -52,23 +52,21 @@ NaturalNumber::NaturalNumber(const std::vector<uint8_t> &CpNumbers) {
 //  1 — текущее меньше,
 //  0 — равны.
 uint8_t NaturalNumber::cmp(const NaturalNumber* other)  {
-    auto get_effective_size = [](const std::vector<uint8_t>& vec) -> size_t {
-        size_t sz = vec.size();
-        while (sz > 1 && vec[sz - 1] == 0) --sz;
-        return sz;
-    };
-    size_t this_sz = get_effective_size(numbers);
-    size_t other_sz = get_effective_size(other->numbers);
-    if (this_sz > other_sz) return 2;
-    if (this_sz < other_sz) return 1;
-    for (size_t i = this_sz; i-- > 0;) {
-        uint8_t a = numbers[i];
+    // По условию экземпляры валидные и не содержат незначащих нулей,
+    // поэтому сравниваем прямо по длине и по цифрам.
+    if (this->numbers.size() > other->numbers.size()) return 2;
+    if (this->numbers.size() < other->numbers.size()) return 1;
+
+    // Длины равны — сравниваем по старшему разряду к младшему.
+    for (size_t i = this->numbers.size(); i-- > 0;) {
+        uint8_t a = this->numbers[i];
         uint8_t b = other->numbers[i];
         if (a > b) return 2;
         if (a < b) return 1;
     }
     return 0;
 }
+
 
 
 //  N-3
