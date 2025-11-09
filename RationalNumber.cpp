@@ -102,3 +102,35 @@ IntegerNumber RationalNumber::toInteger(const RationalNumber &other) const {
     // про него забываем, нас волнует только числитель.
     return IntegerNumber(*this->numerator);
 }
+
+//Q-7 Умножение рациональных чисел
+RationalNumber RationalNumber::multiply(const RationalNumber& other) const {
+    //Пользуемся умножением натуральных и целых чисел
+    IntegerNumber intres(this->numerator->multiply(other.getIntegerNumerator()));
+    NaturalNumber natres(this->denominator->multiply(other.getNaturalDenominator()));
+    //Сокращаем полученную дробь
+    RationalNumber result(intres, natres);
+    result.reduce();
+    return result;
+}
+
+//Q-8 Деление рациональных чисел
+RationalNumber RationalNumber::division(const RationalNumber& other) const {
+    //Проверка на делитель равный 0
+    if (other.getIntegerNumerator().getSign() || !(other.getNaturalDenominator().isNotEqualZero())) {
+        throw UniversalStringException("you can't divide by zero");
+    }
+
+    //Получаем знак результата
+    bool ressign = this->numerator->isNegative() ^ other.getIntegerNumerator().isNegative();
+    //Создаём удобные для дальнейших вычислений объекты
+    IntegerNumber firstmul(other.getIntegerNumerator().getNumbers(), ressign);
+    NaturalNumber secondmul(other.getIntegerNumerator().getNumbers());
+    //Так как деление это умножение на обратную дробь, применяем методы умножения
+    IntegerNumber intres(this->numerator->multiply(firstmul));
+    NaturalNumber natres(this->denominator->multiply(secondmul));
+    //Сокращение дроби
+    RationalNumber result(intres, natres);
+    result.reduce();
+    return result;
+}

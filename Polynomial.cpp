@@ -49,3 +49,29 @@ Polynomial::Polynomial(const std::vector<rationalSupport> &coefficientsA) {
     }
 }
 
+//P-4 умножение полинома на x в k-ой степени
+Polynomial Polynomial::multiplyByXInKPower(std::size_t k) const {
+    std::vector<RationalNumber> result;
+    RationalNumber zero(IntegerNumber({0}, false), NaturalNumber({1}));
+    //Добавляем в конец полинома количество нулей, равное k
+    for (size_t i = 0; i < k; i++) {
+        result.push_back(zero);
+    }
+    //Переписываем после нулей оставшиеся коэффиценты 
+    for (size_t i = 0; i < this->coefficients.size(); i++) {
+        result.push_back(this->coefficients[i]);
+    }
+    return Polynomial(result);
+}
+
+//P-5 Возврат старшего коэффицента
+RationalNumber Polynomial::getLeadingCoefficient() const {
+    RationalNumber result(this->coefficients[this->coefficients.size() - 1]);
+    return result;
+}
+
+//P-6 Получение степени многочлена
+std::size_t Polynomial::getDegree() const {
+    std::size_t result = this->coefficients.size() - 1;
+    return result;
+}
