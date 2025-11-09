@@ -10,18 +10,18 @@ std::string NaturalNumber::toString() noexcept {
     if (this->numbers.empty())
         throw UniversalStringException("atypical behavior, the vector of numbers should not be empty");
     std::string result(this->numbers.size(), '0');
-    for (int i = this->numbers.size()-1; i >= 0; --i) {
-        result[this->numbers.size()-i-1] = '0'+this->numbers.at(i);
+    for (int i = this->numbers.size() - 1; i >= 0; --i) {
+        result[this->numbers.size() - i - 1] = '0' + this->numbers.at(i);
     }
     return result;
 }
 
-const std::vector<uint8_t> & NaturalNumber::getNumbers() noexcept {
+const std::vector<uint8_t> &NaturalNumber::getNumbers() const noexcept {
     return this->numbers;
 }
 
 NaturalNumber::NaturalNumber(unsigned long long int a) {
-    while(a > 0){
+    while (a > 0) {
         this->numbers.push_back(a % 10);
         a /= 10;
     }
@@ -32,8 +32,8 @@ NaturalNumber::NaturalNumber(const std::string &a) {
         throw UniversalStringException("wrong argument, the string of numbers should not be empty");
     this->numbers = std::vector<uint8_t>(a.size());
     std::size_t i = a.length() - 1;
-    while (true){
-        numbers[a.size()-i-1] = a[i] - '0';
+    while (true) {
+        numbers[a.size() - i - 1] = a[i] - '0';
         if (i != 0)
             i--;
         else
@@ -50,7 +50,7 @@ NaturalNumber::NaturalNumber(const std::vector<uint8_t> &CpNumbers) {
 
 //N-11: Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен от нуля)
 NaturalNumber NaturalNumber::quotient(const NaturalNumber &other) const {
-    if (other.isEqualZero()) {
+    if (other.isNotEqualZero()) {
         throw UniversalStringException("can not divide by zero");
     }
 
@@ -59,7 +59,7 @@ NaturalNumber NaturalNumber::quotient(const NaturalNumber &other) const {
     }
 
     NaturalNumber dividend(*this); // будем работать с копиями
-    const NaturalNumber& divisor(other);
+    const NaturalNumber &divisor(other);
     uint32_t quotient = 0;
 
     while (dividend.cmp(&divisor) % 2 == 0) {
@@ -81,14 +81,14 @@ NaturalNumber NaturalNumber::quotient(const NaturalNumber &other) const {
 
 //N-12: Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)
 NaturalNumber NaturalNumber::remainder(const NaturalNumber &other) const {
-    if (other.isEqualZero()) {
+    if (other.isNotEqualZero()) {
         throw UniversalStringException("can not divide by zero");
     }
 
     if (cmp(&other) == 1) return *this;
 
     NaturalNumber dividend(*this);
-    const NaturalNumber& divisor(other);
+    const NaturalNumber &divisor(other);
 
     const NaturalNumber quotient = dividend.quotient(divisor);
     const NaturalNumber product = divisor.multiply(quotient);
@@ -101,15 +101,15 @@ NaturalNumber NaturalNumber::GCD(const NaturalNumber &other) const {
     NaturalNumber first_value(*this);
     NaturalNumber second_value(other);
 
-    if (this->isEqualZero() && other.isEqualZero()){
+    if (this->isNotEqualZero() && other.isNotEqualZero()) {
         throw UniversalStringException("the gcd for two zeros is not uniquely defined");
     }
 
-    if (second_value.isEqualZero()) {
+    if (second_value.isNotEqualZero()) {
         throw UniversalStringException("can not divide by zero");
     }
     // алгоритм Евклида
-    while (!second_value.isEqualZero()) {
+    while (!second_value.isNotEqualZero()) {
         if (first_value.cmp(&second_value) == 1) {
             std::swap(first_value, second_value);
         }
@@ -123,9 +123,9 @@ NaturalNumber NaturalNumber::GCD(const NaturalNumber &other) const {
 //N14: НОК натуральных чисел
 NaturalNumber NaturalNumber::LCM(const NaturalNumber &other) const {
     const NaturalNumber first_value(*this);
-    const NaturalNumber& second_value(other);
+    const NaturalNumber &second_value(other);
 
-    if (first_value.isEqualZero() || second_value.isEqualZero()) {
+    if (first_value.isNotEqualZero() || second_value.isNotEqualZero()) {
         throw UniversalStringException("the lcm for zeros is not uniquely defined");
     }
     // НОК = a * b / НОД(a, b)
@@ -133,7 +133,7 @@ NaturalNumber NaturalNumber::LCM(const NaturalNumber &other) const {
 }
 
 //  N1: Сравнение чисел: 2 — текущее больше, 1 — текущее меньше, 0 — равны.
-uint8_t NaturalNumber::cmp(const NaturalNumber* other) const {
+uint8_t NaturalNumber::cmp(const NaturalNumber *other) const {
     // По условию экземпляры валидные и не содержат незначащих нулей,
     // поэтому сравниваем прямо по длине и по цифрам.
     if (this->numbers.size() > other->numbers.size()) return 2;
@@ -152,17 +152,17 @@ uint8_t NaturalNumber::cmp(const NaturalNumber* other) const {
 //N3: Добавление 1 к натуральному числу
 void NaturalNumber::increment() {
     uint8_t carry = 1;
-    for (size_t i = 0; i < numbers.size() && carry; ++i) {
-        uint8_t sum = numbers[i] + carry;
-        numbers[i] = sum % 10;
+    for (size_t i = 0; i < this->numbers.size() && carry; ++i) {
+        uint8_t sum = this->numbers[i] + carry;
+        this->numbers[i] = sum % 10;
         carry = sum / 10;
     }
-    if (carry) numbers.push_back(carry);
+    if (carry) this->numbers.push_back(carry);
 }
 
 //N4: Сложение натуральных чисел
 NaturalNumber NaturalNumber::add(const NaturalNumber &other) const {
-    size_t n = numbers.size();
+    size_t n = this->numbers.size();
     size_t m = other.numbers.size();
     size_t maxlen = std::max(n, m);
     std::vector<uint8_t> res;
@@ -171,7 +171,7 @@ NaturalNumber NaturalNumber::add(const NaturalNumber &other) const {
 
     // Складываем цифры по разрядам
     for (size_t i = 0; i < maxlen; ++i) {
-        uint8_t a = (i < n) ? numbers[i] : 0;
+        uint8_t a = (i < n) ? this->numbers[i] : 0;
         uint8_t b = (i < m) ? other.numbers[i] : 0;
         uint8_t s = a + b + carry;
         res.push_back(s % 10);
@@ -190,10 +190,10 @@ NaturalNumber NaturalNumber::subtract(const NaturalNumber &other) const {
         throw UniversalStringException(msg);
     }
     if (comparison == 0) return NaturalNumber(std::vector<uint8_t>{0});
-    std::vector<uint8_t> res(numbers.size(), 0);
+    std::vector<uint8_t> res(this->numbers.size(), 0);
     int borrow = 0;
-    for (size_t i = 0; i < numbers.size(); ++i) {
-        int a = numbers[i];
+    for (size_t i = 0; i < this->numbers.size(); ++i) {
+        int a = this->numbers[i];
         int b = (i < other.numbers.size()) ? other.numbers[i] : 0;
         int diff = a - b - borrow;
         if (diff < 0) {
@@ -215,10 +215,10 @@ NaturalNumber NaturalNumber::multiplyByDigit(std::size_t b) const {
     }
     if (b == 0) return NaturalNumber(std::vector<uint8_t>{0});
     std::vector<uint8_t> res;
-    res.reserve(numbers.size() + 1);
+    res.reserve(this->numbers.size() + 1);
     unsigned int carry = 0;
-    for (size_t i = 0; i < numbers.size(); ++i) {
-        unsigned int prod = static_cast<unsigned int>(numbers[i]) * b + carry;
+    for (size_t i = 0; i < this->numbers.size(); ++i) {
+        unsigned int prod = static_cast<unsigned int>(this->numbers[i]) * b + carry;
         res.push_back(static_cast<uint8_t>(prod % 10));
         carry = prod / 10;
     }
@@ -232,29 +232,29 @@ NaturalNumber NaturalNumber::multiplyByDigit(std::size_t b) const {
 //  N7: Умножение на 10^k (сдвиг влево на k позиций).
 NaturalNumber NaturalNumber::multiplyByPowerOfTen(std::size_t k) const {
     // Если число равно 0
-    if (numbers.size() == 1 && numbers[0] == 0)
+    if (this->numbers.size() == 1 && this->numbers[0] == 0)
         return NaturalNumber(std::vector<uint8_t>{0});
 
     std::vector<uint8_t> res;
-    res.reserve(numbers.size() + k);
+    res.reserve(this->numbers.size() + k);
 
     // Добавляем k нулей (сдвигаем)
     for (size_t i = 0; i < k; ++i) res.push_back(0);
 
     // Добавляем все цифры исходного числа
-    res.insert(res.end(), numbers.begin(), numbers.end());
+    res.insert(res.end(), this->numbers.begin(), this->numbers.end());
     return NaturalNumber(res);
 }
 
 //  N8: Умножение двух натуральных чисел (в столбик).
-NaturalNumber NaturalNumber::multiply(const NaturalNumber& other) const {
+NaturalNumber NaturalNumber::multiply(const NaturalNumber &other) const {
     // Если одно из чисел = 0 → результат = 0
-    if ((numbers.size() == 1 && numbers[0] == 0) ||
+    if ((this->numbers.size() == 1 && this->numbers[0] == 0) ||
         (other.numbers.size() == 1 && other.numbers[0] == 0)) {
         return NaturalNumber(std::vector<uint8_t>{0});
     }
 
-    std::vector<uint8_t> res(numbers.size() + other.numbers.size(), 0);
+    std::vector<uint8_t> res(this->numbers.size() + other.numbers.size(), 0);
 
     for (size_t i = 0; i < numbers.size(); ++i) {
         uint8_t carry = 0;
@@ -273,4 +273,9 @@ NaturalNumber NaturalNumber::multiply(const NaturalNumber& other) const {
         res.pop_back();
 
     return NaturalNumber(res);
+}
+
+//N2: Проверка на ноль: если число не равно нулю, то «да» иначе «нет»
+bool NaturalNumber::isNotEqualZero() const {
+    return !(numbers.size() == 1 && numbers[0] == 0);
 }

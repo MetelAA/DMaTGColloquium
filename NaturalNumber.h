@@ -36,9 +36,9 @@ public:
     }
 
     std::string toString() noexcept;
-    const std::vector<uint8_t>& getNumbers() noexcept;
+    const std::vector<uint8_t>& getNumbers() const noexcept;
     uint8_t cmp(const NaturalNumber* other) const;
-    bool isEqualZero() const;
+    bool isNotEqualZero() const;
     void increment();
     NaturalNumber add(const NaturalNumber& other) const;
     NaturalNumber subtract(const NaturalNumber& other) const;
