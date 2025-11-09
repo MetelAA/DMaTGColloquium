@@ -83,7 +83,7 @@ bool RationalNumber::isInteger() const {
 
 // Q-3: Преобразование целого в дробное.
 RationalNumber RationalNumber::fromInteger(const IntegerNumber &intNum) {
-    NaturalNumber denominator(1);
+    NaturalNumber denominator("1");
     return RationalNumber(intNum, denominator);
 }
 
