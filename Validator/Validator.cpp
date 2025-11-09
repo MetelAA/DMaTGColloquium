@@ -46,6 +46,9 @@ void Validator::validateIntegerNumber(std::string &number) {
     // Восстанавливаем знак минуса если он был
     if (isNegative)
         number.insert(number.begin(), '-');
+
+    if (number == "-0")
+        throw UniversalStringException("Validator::validateIntegerNumber(): invalid number!");
 }
 
 void Validator::validateRationalNumber(std::string &number) {
@@ -85,7 +88,7 @@ void Validator::validateRationalNumber(std::string &number) {
     number = numerator + '/' + denominator;
 }
 
-std::vector<RationalNumber>  Validator::validatePolynomial(std::string &number) {
+std::vector<RationalNumber> Validator::validatePolynomial(std::string &number) {
     if (number.empty())
         throw UniversalStringException("Validator::validatePolynomial(): empty string.");
 
@@ -115,7 +118,13 @@ std::vector<RationalNumber>  Validator::validatePolynomial(std::string &number) 
     // Сортируем мономы по возрастанию степени
     std::sort(polynom.begin(), polynom.end(),
               [](const Monom& a, const Monom& b) {
-                  return std::stoi(a.degree) < std::stoi(b.degree);
+                  try {
+                      unsigned long long deg_a = std::stoull(a.degree);
+                      unsigned long long deg_b = std::stoull(b.degree);
+                      return deg_a < deg_b;
+                  } catch (...) {
+                      return false;
+                  }
               }
     );
 
@@ -131,20 +140,30 @@ std::vector<RationalNumber>  Validator::validatePolynomial(std::string &number) 
     if (polynom.empty())
         throw UniversalStringException("Validator::validatePolynomial(): no monoms parsed.");
 
-
-
     // Проверяем корректность старшей степени
     try {
         validateNaturalNumber(polynom.back().degree);
     } catch (UniversalStringException&) {throw;}
 
+    // Проверка на переполнение size_t
+    try {
+        size_t max_deg_test = std::stoull(polynom.back().degree);
+        if (max_deg_test > SIZE_MAX - 1) {
+            throw UniversalStringException("Validator::validatePolynomial(): degree too large for size_t!");
+        }
+    } catch (const std::out_of_range&) {
+        throw UniversalStringException("Validator::validatePolynomial(): degree exceeds size_t range!");
+    } catch (const std::invalid_argument&) {
+        throw UniversalStringException("Validator::validatePolynomial(): invalid degree format!");
+    }
+
     // Создаем вектор коэффициентов, где индекс = степень
-    size_t max_deg = std::stoi(polynom.back().degree) + 1;
+    size_t max_deg = std::stoull(polynom.back().degree) + 1;
     result.resize(max_deg, RationalNumber("0/1"));  // Заполняем нулями
 
     // Заполняем коэффициенты для соответствующих степеней
     for (const auto& monom : polynom) {
-        int deg = std::stoi(monom.degree);
+        size_t deg = std::stoull(monom.degree);
         try {
             // Создаем рациональное число из строки формата "числитель/знаменатель"
             result[deg] = RationalNumber(monom.numerator + "/" + monom.denominator);
@@ -162,6 +181,8 @@ std::vector<RationalNumber>  Validator::validatePolynomial(std::string &number) 
         throw UniversalStringException("Validator::validatePolynomial(): all coefficients are zero!");
     }
 
+    // Реверсируем вектор перед возвратом
+    std::reverse(result.begin(), result.end());
 
     return result;
 }
