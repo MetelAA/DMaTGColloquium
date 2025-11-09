@@ -48,9 +48,9 @@ NaturalNumber::NaturalNumber(const std::vector<uint8_t> &CpNumbers) {
 }
 
 
-//N-11: Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен от нуля)
+//N11: Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен от нуля)
 NaturalNumber NaturalNumber::quotient(const NaturalNumber &other) const {
-    if (other.isNotEqualZero()) {
+    if (!other.isNotEqualZero()) {
         throw UniversalStringException("can not divide by zero");
     }
 
@@ -79,9 +79,9 @@ NaturalNumber NaturalNumber::quotient(const NaturalNumber &other) const {
     return NaturalNumber(quotient_result);
 }
 
-//N-12: Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)
+//N12: Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)
 NaturalNumber NaturalNumber::remainder(const NaturalNumber &other) const {
-    if (other.isNotEqualZero()) {
+    if (!other.isNotEqualZero()) {
         throw UniversalStringException("can not divide by zero");
     }
 
@@ -101,15 +101,15 @@ NaturalNumber NaturalNumber::GCD(const NaturalNumber &other) const {
     NaturalNumber first_value(*this);
     NaturalNumber second_value(other);
 
-    if (this->isNotEqualZero() && other.isNotEqualZero()) {
+    if (!this->isNotEqualZero() && !other.isNotEqualZero()) {
         throw UniversalStringException("the gcd for two zeros is not uniquely defined");
     }
 
-    if (second_value.isNotEqualZero()) {
+    if (!second_value.isNotEqualZero()) {
         throw UniversalStringException("can not divide by zero");
     }
     // алгоритм Евклида
-    while (!second_value.isNotEqualZero()) {
+    while (second_value.isNotEqualZero()) {
         if (first_value.cmp(&second_value) == 1) {
             std::swap(first_value, second_value);
         }
@@ -125,7 +125,7 @@ NaturalNumber NaturalNumber::LCM(const NaturalNumber &other) const {
     const NaturalNumber first_value(*this);
     const NaturalNumber &second_value(other);
 
-    if (first_value.isNotEqualZero() || second_value.isNotEqualZero()) {
+    if (!first_value.isNotEqualZero() || !second_value.isNotEqualZero()) {
         throw UniversalStringException("the lcm for zeros is not uniquely defined");
     }
     // НОК = a * b / НОД(a, b)
@@ -281,7 +281,6 @@ bool NaturalNumber::isNotEqualZero() const {
 }
 
 // N9: Вычитание из первого числа меньшего числа, умноженного на цифру.
-// Алейников Иван.
 NaturalNumber NaturalNumber::subtractMultiplied(const NaturalNumber& other, std::size_t c) const {
     if (c > 9)  // c < 0 проверка не нужна для size_t
         throw UniversalStringException("NaturalNumber::subtractMultiplied: The multiplier is not a digit from 0 to 9!");
