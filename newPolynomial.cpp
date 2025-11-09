@@ -75,7 +75,7 @@ Polynomial Polynomial::derivative() const {
     }
 
     // Иначе создаем новый объект для хранения производной
-    Polynomial* derivative_ptr = new Polynomial(*this);
+    Polynomial derivative = Polynomial(*this);
     // Начиная с 1 степени переменной, перебираем все коэффициенты
     for(size_t i = 1; i < this->coefficients.size(); i++){
         // Переводим показатель степени в дробное представление 
@@ -84,12 +84,11 @@ Polynomial Polynomial::derivative() const {
         // Так как при дифференцировании степень переменной понижается,
         // результат умножения коэффициента на показатель степени записываем 
         // в ячейку, соответствующую меньшей степени переменной
-        derivative_ptr->coefficients[i - 1] = this->coefficients[i].multiply(power);
+        derivative.coefficients[i - 1] = this->coefficients[i].multiply(power);
     }
     // Так как копировали исходный полином, а степень производной на 1 меньше,
     // последняя ячейка, которая соответствует старшему коэффициенту, больше не нужна
-    derivative_ptr->pop_back();
-    Polynomial derivative = Polynomial(*derivative_ptr);
+    derivative.pop_back();
     return derivative;
 };
 
