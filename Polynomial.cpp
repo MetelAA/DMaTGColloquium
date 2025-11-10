@@ -147,3 +147,15 @@ Polynomial Polynomial::makeSquareFree() const {
     // Поделим на НОД, чтобы остались только корни кратности 1
     return derivative.remainder(gcd);
 }
+
+// P-3: Умножение многочлена на рациональное число
+Polynomial Polynomial::multiplyByRational(const RationalNumber& b) const {
+    std::vector<RationalNumber> result;
+    result.reserve(this->coefficients.size());
+
+    for (std::size_t i = 0; i < this->coefficients.size(); ++i) {
+        result.push_back(this->coefficients[i].multiply(b));
+    }
+
+    return Polynomial(result);
+}
