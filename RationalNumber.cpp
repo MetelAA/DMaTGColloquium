@@ -15,7 +15,7 @@ RationalNumber::RationalNumber(const std::string &numeratorA, const std::string 
     this->denominator = new NaturalNumber(denominatorA);
 }
 
-std::string RationalNumber::toString() const{
+std::string RationalNumber::toString() const {
     return this->numerator->toString() + "/" + this->denominator->toString();
 }
 
@@ -29,10 +29,10 @@ const NaturalNumber &RationalNumber::getNaturalDenominator() const noexcept {
 
 RationalNumber::RationalNumber(const std::string &s) {
     size_t delimiterPos = s.find('/');
-    if(delimiterPos == std::string::npos){
+    if (delimiterPos == std::string::npos) {
         this->numerator = new IntegerNumber(s);
         this->denominator = new NaturalNumber(std::vector<uint8_t>{1});
-    }else {
+    } else {
         std::string numeratorS = s.substr(0, delimiterPos);
         std::string denominatorS = s.substr(delimiterPos + 1);
         this->numerator = new IntegerNumber(numeratorS);
@@ -106,4 +106,36 @@ IntegerNumber RationalNumber::toInteger(const RationalNumber &other) const {
     // Раз оно представимо как целое, то знаменатель = 1,
     // про него забываем, нас волнует только числитель.
     return IntegerNumber(*this->numerator);
+}
+
+//Q5: Сложение дробей
+RationalNumber RationalNumber::add(const RationalNumber &other) const {
+    NaturalNumber numeratorThis = this->getIntegerNumerator().abs();
+    const NaturalNumber denominatorThis = this->getNaturalDenominator();
+
+    NaturalNumber numeratorOther = other.getIntegerNumerator().abs();
+    const NaturalNumber &denominatorOther = other.getNaturalDenominator();
+
+    NaturalNumber commonDenominator = denominatorThis.LCM(denominatorOther);
+
+    const NaturalNumber factorThis = commonDenominator.quotient(denominatorThis);
+    const NaturalNumber factorOther = commonDenominator.quotient(denominatorOther);
+
+    numeratorThis = numeratorThis.multiply(factorThis);
+    numeratorOther = numeratorOther.multiply(factorOther);
+
+    const IntegerNumber sumOfNumerators = IntegerNumber(
+            numeratorThis.getNumbers(), this->getIntegerNumerator().getSign())
+            .add(
+                    IntegerNumber(numeratorOther.getNumbers(), other.getIntegerNumerator().getSign())
+            );
+
+    return RationalNumber(sumOfNumerators, commonDenominator);
+}
+
+//Q6: Вычитание дробей
+RationalNumber RationalNumber::subtract(const RationalNumber &other) const {
+    RationalNumber deductible = RationalNumber(other.getIntegerNumerator().negate(), other.getNaturalDenominator());
+    // то из чего вычитаем + вычитаемое число *(-1).  Зависимости из таблицы требований транзитивно сохраняются!
+    return this->add(deductible);
 }
