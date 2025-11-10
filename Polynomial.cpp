@@ -135,7 +135,7 @@ Polynomial Polynomial::quotient(const Polynomial &other) const
     //то есть в этом векторе полином x^2 + 2x + 3 записан в прямом виде {1, 2, 3}
     RationalNumber currentCoefficient (zero); //Что мы делаем при делении в столбик? Берем такой множитель, чтобы старший член сократился, верно? Эта переменная и есть этот множитель - каждый раз новая
     Polynomial currentPolynomial ((std::vector<RationalNumber>) {}); //А потом пре делении в столбик мы вычитаем из делимого делитель, помноженный на currentCoefficient - получим от вычитания остаток - это он и есть - каждый раз новый
-    for(size_t i = dividendCoefficientVector.size()-1; i >= 0; i--){ //начинаем со старшей степени
+    for(size_t i = dividendCoefficientVector.size()-1; i > divisorCoefficientVectorSize - 2; i--){ //начинаем со старшей степени
         if(i < dividendCoefficientVector.size()){ //может случиться так, что сократится не только старший член, но и какой-то следующий - тогда нужно "пропустить" шаг итерации, поставив 0
             currentCoefficient = dividendCoefficientVector.back().division(divisorCoefficientVector.back()); //по определению
             for(size_t j = 0; j < dividendCoefficientVector.size()-divisorCoefficientVectorSize; j++){ //типа умножаем на x^n, но так как вектор коэфф. пуст, то нельзя использовать multiplyByXInKPower
