@@ -339,13 +339,36 @@ Polynomial Polynomial::multiplyByRational(const RationalNumber &b) const {
     if (!b.getIntegerNumerator().abs().isNotEqualZero()){
         return Polynomial(std::vector<RationalNumber>{RationalNumber(IntegerNumber(std::vector<uint8_t>{0}, false), NaturalNumber(std::vector<uint8_t>{1}))});
     }
-
     std::vector<RationalNumber> result;
     result.reserve(this->coefficients.size());
     for (std::size_t i = 0; i < this->coefficients.size(); ++i) {
         result.push_back(this->coefficients[i].multiply(b));
 
     }
-
     return Polynomial(result);
+}
+
+//P-4 умножение полинома на x в k-ой степени
+Polynomial Polynomial::multiplyByXInKPower(std::size_t k) const {
+    std::vector<RationalNumber> result;
+    RationalNumber zero(IntegerNumber({0}, false), NaturalNumber(std::vector<uint8_t>{1}));
+    //Добавляем в конец полинома количество нулей, равное k
+    for (size_t i = 0; i < k; i++) {
+        result.push_back(zero);
+    }
+    //Переписываем после нулей оставшиеся коэффиценты
+    for (size_t i = 0; i < this->coefficients.size(); i++) {
+        result.push_back(this->coefficients[i]);
+    }
+    return Polynomial(result);
+}
+
+//P-5 Возврат старшего коэффицента
+RationalNumber Polynomial::getLeadingCoefficient() const {
+    return this->coefficients[this->coefficients.size() - 1];
+}
+
+//P-6 Получение степени многочлена
+std::size_t Polynomial::getDegree() const {
+    return this->coefficients.size() - 1;
 }
