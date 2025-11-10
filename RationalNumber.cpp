@@ -29,10 +29,15 @@ const NaturalNumber &RationalNumber::getNaturalDenominator() const noexcept {
 
 RationalNumber::RationalNumber(const std::string &s) {
     size_t delimiterPos = s.find('/');
-    std::string numeratorS = s.substr(0, delimiterPos);
-    std::string denominatorS = s.substr(delimiterPos + 1);
-    this->numerator = new IntegerNumber(numeratorS);
-    this->denominator = new NaturalNumber(denominatorS);
+    if(delimiterPos == std::string::npos){
+        this->numerator = new IntegerNumber(s);
+        this->denominator = new NaturalNumber(std::vector<uint8_t>{1});
+    }else {
+        std::string numeratorS = s.substr(0, delimiterPos);
+        std::string denominatorS = s.substr(delimiterPos + 1);
+        this->numerator = new IntegerNumber(numeratorS);
+        this->denominator = new NaturalNumber(denominatorS);
+    }
 }
 
 // Q-1: сокращение дроби.
