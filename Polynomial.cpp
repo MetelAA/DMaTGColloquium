@@ -214,7 +214,6 @@ Polynomial Polynomial::multiply(const Polynomial &other) const {
         res.coefficients.push_back(sum); //закидываем коэффициент в ответ
     }
     return res;
-
 }
 
 //P9: Частное от деления многочлена на многочлен при делении с остатком
@@ -273,22 +272,26 @@ Polynomial Polynomial::add(const Polynomial &other) const {
     std::vector<RationalNumber> resultCoeffs;
     resultCoeffs.reserve(longer.size());
 
-    std::size_t diff = longer.size() - shorter.size();
-
-    for (std::size_t i = 0; i < diff; ++i) {
-        resultCoeffs.push_back(longer[i]);
+    for (size_t i = 0; i < shorter.size(); ++i) {
+        resultCoeffs.push_back(longer.at(i).add(shorter.at(i)));
     }
 
-    for (std::size_t i = diff; i < longer.size(); ++i) {
-        RationalNumber sum = longer[i].add(shorter[i - diff]);
-        resultCoeffs.push_back(sum);
+    for (size_t i = shorter.size() ; i < longer.size(); ++i) {
+        resultCoeffs.push_back(longer.at(i));
     }
 
-    for (int i = 0; i < resultCoeffs.size(); ++i) { //и вообще эта ситуация возможно только при diff==0
+    for (size_t i = resultCoeffs.size() - 1; true; --i) {
         if (!resultCoeffs.at(i).getIntegerNumerator().abs().isNotEqualZero())
             resultCoeffs.pop_back(); //примнение pop_back корректно, тк мы имеем право удалять только ведущие нули, если коэффицент при наибольшей степени не 0, то даже не рассматриваем оставшиеся
         else
             break;
+
+        if (i == 0)
+            break;
+    }
+
+    for (auto & resultCoeff : resultCoeffs) {
+        resultCoeff.reduce();
     }
 
     return Polynomial(resultCoeffs);
@@ -296,9 +299,9 @@ Polynomial Polynomial::add(const Polynomial &other) const {
 
 //P2: Вычитание многочленов
 Polynomial Polynomial::subtract(const Polynomial &other) const {
-    const std::vector<RationalNumber>& longer  = (this->coefficients.size() >= other.coefficients.size())
-                                                 ? this->coefficients
-                                                 : other.coefficients;
+    const std::vector<RationalNumber>& longer = (this->coefficients.size() >= other.coefficients.size())
+                                                ? this->coefficients
+                                                : other.coefficients;
     const std::vector<RationalNumber>& shorter = (this->coefficients.size() >= other.coefficients.size())
                                                  ? other.coefficients
                                                  : this->coefficients;
@@ -306,29 +309,26 @@ Polynomial Polynomial::subtract(const Polynomial &other) const {
     std::vector<RationalNumber> resultCoeffs;
     resultCoeffs.reserve(longer.size());
 
-    std::size_t diff = longer.size() - shorter.size();
-
-    bool thisIsLonger = (this->coefficients.size() >= other.coefficients.size());
-
-    for (std::size_t i = 0; i < diff; ++i) {
-        if (thisIsLonger)
-            resultCoeffs.push_back(longer[i]);
-        else
-            resultCoeffs.push_back(RationalNumber(0, 1).subtract(longer[i]));
+    for (size_t i = 0; i < shorter.size(); ++i) {
+        resultCoeffs.push_back(longer.at(i).subtract(shorter.at(i)));
     }
 
-    for (std::size_t i = diff; i < longer.size(); ++i) {
-        RationalNumber first_value = thisIsLonger ? longer[i] : RationalNumber(0, 1);
-        RationalNumber second_value = thisIsLonger ? shorter[i - diff] : longer[i - diff];
-        RationalNumber res_value = thisIsLonger ? first_value.subtract(second_value) : second_value.subtract(first_value);
-        resultCoeffs.push_back(res_value);
+    for (size_t i = shorter.size() ; i < longer.size(); ++i) {
+        resultCoeffs.push_back(longer.at(i));
     }
 
-    for (int i = 0; i < resultCoeffs.size(); ++i) { //и вообще эта ситуация возможно только при diff==0
+    for (size_t i = resultCoeffs.size() - 1; true; --i) {
         if (!resultCoeffs.at(i).getIntegerNumerator().abs().isNotEqualZero())
             resultCoeffs.pop_back(); //примнение pop_back корректно, тк мы имеем право удалять только ведущие нули, если коэффицент при наибольшей степени не 0, то даже не рассматриваем оставшиеся
         else
             break;
+
+        if (i == 0)
+            break;
+    }
+
+    for (auto & resultCoeff : resultCoeffs) {
+        resultCoeff.reduce();
     }
 
     return Polynomial(resultCoeffs);
@@ -345,6 +345,10 @@ Polynomial Polynomial::multiplyByRational(const RationalNumber &b) const {
         result.push_back(this->coefficients[i].multiply(b));
 
     }
+    for (auto & resultCoeff : result) {
+        resultCoeff.reduce();
+    }
+
     return Polynomial(result);
 }
 
