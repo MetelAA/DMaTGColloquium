@@ -260,3 +260,92 @@ Polynomial Polynomial::quotient(const Polynomial &other) const {
     }
     return res;
 }
+
+//P1: Сложение многочленов
+Polynomial Polynomial::add(const Polynomial &other) const {
+    const std::vector<RationalNumber>& longer = (this->coefficients.size() >= other.coefficients.size())
+                                                 ? this->coefficients
+                                                 : other.coefficients;
+    const std::vector<RationalNumber>& shorter = (this->coefficients.size() >= other.coefficients.size())
+                                                 ? other.coefficients
+                                                 : this->coefficients;
+
+    std::vector<RationalNumber> resultCoeffs;
+    resultCoeffs.reserve(longer.size());
+
+    std::size_t diff = longer.size() - shorter.size();
+
+    for (std::size_t i = 0; i < diff; ++i) {
+        resultCoeffs.push_back(longer[i]);
+    }
+
+    for (std::size_t i = diff; i < longer.size(); ++i) {
+        RationalNumber sum = longer[i].add(shorter[i - diff]);
+        resultCoeffs.push_back(sum);
+    }
+
+    for (int i = 0; i < resultCoeffs.size(); ++i) { //и вообще эта ситуация возможно только при diff==0
+        if (!resultCoeffs.at(i).getIntegerNumerator().abs().isNotEqualZero())
+            resultCoeffs.pop_back(); //примнение pop_back корректно, тк мы имеем право удалять только ведущие нули, если коэффицент при наибольшей степени не 0, то даже не рассматриваем оставшиеся
+        else
+            break;
+    }
+
+    return Polynomial(resultCoeffs);
+}
+
+//P2: Вычитание многочленов
+Polynomial Polynomial::subtract(const Polynomial &other) const {
+    const std::vector<RationalNumber>& longer  = (this->coefficients.size() >= other.coefficients.size())
+                                                 ? this->coefficients
+                                                 : other.coefficients;
+    const std::vector<RationalNumber>& shorter = (this->coefficients.size() >= other.coefficients.size())
+                                                 ? other.coefficients
+                                                 : this->coefficients;
+
+    std::vector<RationalNumber> resultCoeffs;
+    resultCoeffs.reserve(longer.size());
+
+    std::size_t diff = longer.size() - shorter.size();
+
+    bool thisIsLonger = (this->coefficients.size() >= other.coefficients.size());
+
+    for (std::size_t i = 0; i < diff; ++i) {
+        if (thisIsLonger)
+            resultCoeffs.push_back(longer[i]);
+        else
+            resultCoeffs.push_back(RationalNumber(0, 1).subtract(longer[i]));
+    }
+
+    for (std::size_t i = diff; i < longer.size(); ++i) {
+        RationalNumber first_value = thisIsLonger ? longer[i] : RationalNumber(0, 1);
+        RationalNumber second_value = thisIsLonger ? shorter[i - diff] : longer[i - diff];
+        RationalNumber res_value = thisIsLonger ? first_value.subtract(second_value) : second_value.subtract(first_value);
+        resultCoeffs.push_back(res_value);
+    }
+
+    for (int i = 0; i < resultCoeffs.size(); ++i) { //и вообще эта ситуация возможно только при diff==0
+        if (!resultCoeffs.at(i).getIntegerNumerator().abs().isNotEqualZero())
+            resultCoeffs.pop_back(); //примнение pop_back корректно, тк мы имеем право удалять только ведущие нули, если коэффицент при наибольшей степени не 0, то даже не рассматриваем оставшиеся
+        else
+            break;
+    }
+
+    return Polynomial(resultCoeffs);
+}
+
+//P3: Умножение многочлена на рациональное число
+Polynomial Polynomial::multiplyByRational(const RationalNumber &b) const {
+    if (!b.getIntegerNumerator().abs().isNotEqualZero()){
+        return Polynomial(std::vector<RationalNumber>{RationalNumber(IntegerNumber(std::vector<uint8_t>{0}, false), NaturalNumber(std::vector<uint8_t>{1}))});
+    }
+
+    std::vector<RationalNumber> result;
+    result.reserve(this->coefficients.size());
+    for (std::size_t i = 0; i < this->coefficients.size(); ++i) {
+        result.push_back(this->coefficients[i].multiply(b));
+
+    }
+
+    return Polynomial(result);
+}
