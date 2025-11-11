@@ -77,7 +77,7 @@ Polynomial Polynomial::GCD(const Polynomial &other) const {
 
     // Пока остаток не станет равен 0, то есть пока количетво коэффициентов больше 1
     // Или пока единственный коэффициент не 0, применяем алгоритм Евклида
-    while(!(remainder->getDegree() == 1 &&
+    while(!(remainder->getDegree() == 0 &&
             remainder->coefficients[0].getIntegerNumerator().getSign() == 0)){
         // Очищаем память от первого полинома, его мы уже обработали
         delete polynom1;
@@ -85,7 +85,6 @@ Polynomial Polynomial::GCD(const Polynomial &other) const {
         // второй полином и остаток от деления первого на второй
         polynom1 = polynom2;
         polynom2 = remainder;
-        // Вычисляем новый остаток
         remainder = new Polynomial(polynom1->remainder(*polynom2));
     }
 
@@ -140,12 +139,16 @@ Polynomial Polynomial::derivative() const {
 
 //P13: Многочлен с корнями 1 кратности
 Polynomial Polynomial::makeSquareFree() const {
-    // Найдем производную полинома
-    Polynomial derivative = this->derivative();
-    // НОД полином и его производной будет содеражть все кратные корни
-    Polynomial gcd = this->GCD(derivative);
-    // Поделим на НОД, чтобы остались только корни кратности 1
-    return derivative.remainder(gcd);
+	// Если полином нулевой или константа
+	if (this->getDegree() == 0) {
+		return *this;
+	}
+	// Находим производную
+	Polynomial derivative = this->derivative();
+	// Находим НОД полинома и его производной
+	Polynomial gcd = this->GCD(derivative);
+	// Делим исходный полином на НОД, чтобы убрать кратные корни
+	return this->quotient(gcd);  // ✅ ПРАВИЛЬНО!
 }
 
 //P7: Вынесение из многочлена НОК знаменателей коэффициентов и НОД числителей
