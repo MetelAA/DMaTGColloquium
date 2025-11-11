@@ -5,6 +5,7 @@
 #include "NaturalNumber.h"
 #include "Exceptions/UniversalStringException.h"
 #include <cmath>
+#include <algorithm>
 
 std::string NaturalNumber::toString() {
     if (this->numbers.empty())
@@ -58,34 +59,63 @@ NaturalNumber::NaturalNumber(const std::vector<uint8_t> &CpNumbers) {
 
 //N11: Неполное частное от деления первого натурального числа на второе с остатком (делитель отличен от нуля)
 NaturalNumber NaturalNumber::quotient(const NaturalNumber &other) const {
-    if (!other.isNotEqualZero()) {
-        throw UniversalStringException("can not divide by zero");
-    }
+	if (!other.isNotEqualZero()) {
+		throw UniversalStringException("can not divide by zero");
+	}
 
-    if (cmp(&other) == 1) {
-        return NaturalNumber(std::vector<uint8_t>{0});
-    }
+	// Если делимое меньше делителя → частное = 0
+	if (this->cmp(&other) == 1) {
+		return NaturalNumber(std::vector<uint8_t>{0});
+	}
 
-    NaturalNumber dividend(*this); // будем работать с копиями
-    const NaturalNumber &divisor(other);
-    uint32_t quotient = 0;
+	NaturalNumber dividend(*this);
+	NaturalNumber divisor(other);
 
-    while (dividend.cmp(&divisor) % 2 == 0) {
-        dividend = dividend.subtract(divisor); // будем вычитать делитель, пока можно
-        quotient++;
-    } // O(n * k), постараюсь ускорить, пока так
+	std::vector<uint8_t> result;  // цифры частного
+	result.reserve(dividend.getNumbers().size());
 
-    std::vector<uint8_t> quotient_result;
-    // так как quotient >= 1 => log10 работает исправно
-    quotient_result.reserve(static_cast<size_t>(std::log10(quotient) + 1));
+	NaturalNumber current(std::vector<uint8_t>{0});
+	const std::vector<uint8_t>& dividendDigits = dividend.getNumbers();
 
-    while (quotient > 0) {
-        quotient_result.push_back(quotient % 10);
-        quotient /= 10;
-    }
+	// идем от старших цифр к младшим (как в ручном делении)
+	for (int i = static_cast<int>(dividendDigits.size()) - 1; i >= 0; --i) {
+		// "сдвигаем" остаток на одну позицию влево (умножаем на 10)
+		current = current.multiplyByPowerOfTen(1);
+		current = current.add(NaturalNumber(std::vector<uint8_t>{dividendDigits[i]}));
 
-    return NaturalNumber(quotient_result);
+		// ищем максимальную цифру q, такую что divisor * q <= current
+		uint8_t q = 0;
+
+		if (current.cmp(&divisor) != 1) {
+			for (int digit = 9; digit >= 1; --digit) { // int — важно
+				NaturalNumber candidate = divisor.multiplyByDigit(static_cast<std::size_t>(digit));
+				try {
+					// пытаемся вычесть — если candidate > current, subtract бросит
+					NaturalNumber newCurrent = current.subtract(candidate);
+					q = static_cast<uint8_t>(digit);
+					current = std::move(newCurrent);
+					break;
+				} catch (const UniversalStringException &) {
+					// candidate > current — пробуем меньшую цифру
+					continue;
+				}
+			}
+		}
+
+		result.push_back(q);
+	}
+
+	// результат записан в обратном порядке (с младших к старшим)
+	std::reverse(result.begin(), result.end());
+
+	// убираем ведущие нули
+	while (result.size() > 1 && result.back() == 0) {
+		result.pop_back();
+	}
+
+	return NaturalNumber(result);
 }
+
 
 //N12: Остаток от деления первого натурального числа на второе натуральное (делитель отличен от нуля)
 NaturalNumber NaturalNumber::remainder(const NaturalNumber &other) const {
