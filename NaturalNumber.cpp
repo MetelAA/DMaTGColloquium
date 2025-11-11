@@ -109,7 +109,7 @@ NaturalNumber NaturalNumber::GCD(const NaturalNumber &other) const {
     NaturalNumber first_value(*this);
     NaturalNumber second_value(other);
 
-    if (!this->isNotEqualZero() || !other.isNotEqualZero()) {
+    if (!this->isNotEqualZero() && !other.isNotEqualZero()) {
         throw UniversalStringException("the gcd for two zeros is not uniquely defined");
     }
 

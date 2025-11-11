@@ -150,71 +150,67 @@ Polynomial Polynomial::makeSquareFree() const {
 
 //P7: Вынесение из многочлена НОК знаменателей коэффициентов и НОД числителей
 Polynomial Polynomial::factorOut() const {
-    NaturalNumber nod = coefficients.at(0).getIntegerNumerator().abs(); //предположили, что первые числа будут НОД и НОК
-    NaturalNumber nok = coefficients.at(0).getNaturalDenominator();
+	NaturalNumber nod = coefficients.at(0).getIntegerNumerator().abs(); //предположили, что первые числа будут НОД и НОК
+	NaturalNumber nok = coefficients.at(0).getNaturalDenominator();
 
-    for(size_t i = 1; i < coefficients.size(); i++){
-        nod = nod.GCD(coefficients.at(i).getIntegerNumerator().abs()); //находим НОД из последовательного алгоритма Евклида для всех коэффициентов
-        nok = nok.LCM(coefficients.at(i).getNaturalDenominator()); //пользуемся формулой связи НОД и НОК последовательно для всех коэффициентов
-    }
+	for(size_t i = 1; i < coefficients.size(); i++){
+		nod = nod.GCD(coefficients.at(i).getIntegerNumerator().abs()); //находим НОД из последовательного алгоритма Евклида для всех коэффициентов
+		nok = nok.LCM(coefficients.at(i).getNaturalDenominator()); //пользуемся формулой связи НОД и НОК последовательно для всех коэффициентов
+	}
 
-    return this->multiplyByRational(RationalNumber(IntegerNumber(nok.getNumbers(), false), nod)); //получившийся полином = НОК/НОД * исходный полином
+	return this->multiplyByRational(RationalNumber(IntegerNumber(nok.getNumbers(), false), nod)); //получившийся полином = НОК/НОД * исходный полином
 }
+
+
 
 //P8: Умножение многочленов
 Polynomial Polynomial::multiply(const Polynomial &other) const {
-    std::vector<RationalNumber> multiplicandCoefficentVector = this->coefficients; //векторы коэффициентов
-    std::vector<RationalNumber> multiplierCoefficentVector = other.coefficients;
-    RationalNumber zero (IntegerNumber(std::vector<uint8_t>{0}, false), NaturalNumber(std::vector<uint8_t>{1}));
+	RationalNumber zero(
+		IntegerNumber(std::vector<uint8_t>{0}, false),
+		NaturalNumber(std::vector<uint8_t>{1})
+	);
 
-    if(!multiplicandCoefficentVector.back().getIntegerNumerator().abs().isNotEqualZero() || //в случае умножения на 0, получаем 0 сразу
-       !multiplierCoefficentVector.back().getIntegerNumerator().abs().isNotEqualZero()){
-        return Polynomial({zero});
-    }
+	// Проверка на нулевой полином (всё коэффициенты = 0)
+	bool thisZero = true;
+	for (const auto &c : this->coefficients)
+		if (c.getIntegerNumerator().abs().isNotEqualZero()) { thisZero = false; break; }
+	bool otherZero = true;
+	for (const auto &c : other.coefficients)
+		if (c.getIntegerNumerator().abs().isNotEqualZero()) { otherZero = false; break; }
+	if (thisZero || otherZero) return Polynomial({zero});
 
-    Polynomial res ((std::vector<RationalNumber>){});    //алгоритм построен на последовательном суммировании всех произведений
-    RationalNumber sum = RationalNumber(zero);                 //коэффициентов, степени переменной которых при сложении равны текущей для получившегося полинома
-    size_t higherIndex;                 //индекс коэффициента при большей степени - верхний индекс
-    size_t lowerIndex;                  //индекс коэффициента при меньшей степени - нижний индекс
-    size_t maxDeg;                      //максимум из степеней перемножаемых многочленов
-    size_t multiplicandCoefficentVectorInitialSize = multiplicandCoefficentVector.size(); //изначальный размер множимого многочлена
-    size_t multiplierCoefficentVectorInitialSize = multiplierCoefficentVector.size();   //изначальный размер многочлена-множителя
+	size_t n = this->coefficients.size();
+	size_t m = other.coefficients.size();
 
-    if(multiplicandCoefficentVectorInitialSize > multiplierCoefficentVectorInitialSize){ //узнаем, который многочлен имеет большую степень
-        maxDeg = multiplicandCoefficentVectorInitialSize-1;
-        for(size_t i = 0; i < multiplicandCoefficentVectorInitialSize-multiplierCoefficentVectorInitialSize; i++){ //заполняем меньший многочлен незначащими нулями, чтобы не выходить за границы контейнера
-            multiplierCoefficentVector.push_back(zero);
-        }
-    }else{ //тоже самое, но зеркально, в случае, если больше иной многочлен
-        maxDeg = multiplierCoefficentVectorInitialSize-1;
-        for(size_t  i = 0; i < multiplierCoefficentVectorInitialSize-multiplicandCoefficentVectorInitialSize; i++){
-            multiplicandCoefficentVector.push_back(zero);
-        }
-    }
+	// Резервируем результат и инициализируем нулями — один объект RationalNumber на слот
+	std::vector<RationalNumber> resultCoeffs;
+	resultCoeffs.assign(n + m - 1, zero);
 
-    for(size_t i = 0; i < multiplicandCoefficentVectorInitialSize + multiplierCoefficentVectorInitialSize - 1; i++){ //цикл для коэффициентов при каждой степени
-        sum = zero;    //сумма коэффициентов данной степени - переменная, в которой "приводятся подобные"
-        if(i <= maxDeg){    //если степень, для которой мы считаем коэффициент, не превышает максимальную
-            lowerIndex = 0; //то умножаем, начиная со свободного члена
-        }else{              //если степень, для которой мы считаем коэффициент, больше максимальной степени
-            lowerIndex = i - maxDeg; //то умножаем, начиная с той степени, при умножении с которой на максимальную, получим стпень, для которой мы считаем коэффициент
-        } //пример: x^2+x+1 * 2x+3 - считаем для степени 3, которая выше максимальной (2). lowerIndex = 1 - это означает, получить 3 степень можно только при умножении максимальной на первую (lowerIndex)
-        higherIndex = i - lowerIndex; //верхний индекс, указывает либо на коэффициент при степени равной текущей, либо на коэффициент при максимальной
-        while(higherIndex >= lowerIndex){ //нас удовлетворяют все индексы (по совместительству степени), которые в сумме дают текущую степень
-            if(higherIndex > lowerIndex){ //представлим это так, будто один индекс поднимается по лестнице, а другой спускается (смотрим инкремент и декремент в конце)
-                sum.add(multiplicandCoefficentVector.at(higherIndex).multiply(multiplierCoefficentVector.at(lowerIndex))); //если индексы на разных уровнях
-                sum.add(multiplierCoefficentVector.at(higherIndex).multiply(multiplicandCoefficentVector.at(lowerIndex))); //то умножаем пары
-            }else{
-                sum.add(multiplicandCoefficentVector.at(higherIndex).multiply(multiplierCoefficentVector.at(lowerIndex))); //если на одном уровне, то дважды не засчитываем
-            } //пример: x^4+x^3+2x^2+x+1 * 3x^3+x^2+4x+3; считаем для x^2
-            higherIndex--; //Верхняя и нижняя ступеньки: (2x^2)*3 и (x^2)*1
-            lowerIndex++;  //Верхний спустился и нижний поднялся (теперь они на одной ступеньке): x*4x
-        }   //такая логика исходит из очевидного - а именно из того, что умножение x^3 на что угодно (при натуральных степенях + '0') не даст x^2
-        //ровно как и умножение свободного члена ('3') на что угодно не даст x^5 - максимум x^4.
-        res.coefficients.push_back(sum); //закидываем коэффициент в ответ
-    }
-    return res;
+	// Классическое O(n*m) умножение, но стараемся минимизировать копии
+	for (size_t i = 0; i < n; ++i) {
+		const RationalNumber &ai = this->coefficients[i];
+		// если ai == 0 — пропускаем
+		if (!ai.getIntegerNumerator().abs().isNotEqualZero()) continue;
+
+		for (size_t j = 0; j < m; ++j) {
+			const RationalNumber &bj = other.coefficients[j];
+			if (!bj.getIntegerNumerator().abs().isNotEqualZero()) continue;
+
+			// получаем произведение — предполагается, что multiply() возвращает уже новый RationalNumber
+			RationalNumber prod = ai.multiply(bj);
+
+			// добавляем в слот — предполагается, что add() мутирует левый аргумент (как у тебя)
+			resultCoeffs[i + j] = resultCoeffs[i + j].add(prod);
+			// не вызываем reduce() здесь!
+		}
+	}
+
+	// Один проход: сократить дроби в конце — намного реже, чем при каждом add.
+	for (auto &r : resultCoeffs) r.reduce();
+
+	return Polynomial(resultCoeffs);
 }
+
 
 //P9: Частное от деления многочлена на многочлен при делении с остатком
 Polynomial Polynomial::quotient(const Polynomial &other) const {
