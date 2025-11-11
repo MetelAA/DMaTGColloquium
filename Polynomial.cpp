@@ -280,18 +280,18 @@ Polynomial Polynomial::add(const Polynomial &other) const {
         resultCoeffs.push_back(longer.at(i));
     }
 
-    for (size_t i = resultCoeffs.size() - 1; true; --i) {
+    for (size_t i = resultCoeffs.size() - 1; i >= 1; --i) {
         if (!resultCoeffs.at(i).getIntegerNumerator().abs().isNotEqualZero())
             resultCoeffs.pop_back(); //примнение pop_back корректно, тк мы имеем право удалять только ведущие нули, если коэффицент при наибольшей степени не 0, то даже не рассматриваем оставшиеся
+            //также последний элемент веткора даже при равенстве нулю не убираем, тк пустой вектор коээфициентов для полинома не корректен
         else
-            break;
-
-        if (i == 0)
             break;
     }
 
     for (auto & resultCoeff : resultCoeffs) {
-        resultCoeff.reduce();
+        if (resultCoeff.getIntegerNumerator().abs().isNotEqualZero()){
+            resultCoeff.reduce();
+        }
     }
 
     return Polynomial(resultCoeffs);
@@ -299,39 +299,14 @@ Polynomial Polynomial::add(const Polynomial &other) const {
 
 //P2: Вычитание многочленов
 Polynomial Polynomial::subtract(const Polynomial &other) const {
-    const std::vector<RationalNumber>& longer = (this->coefficients.size() >= other.coefficients.size())
-                                                ? this->coefficients
-                                                : other.coefficients;
-    const std::vector<RationalNumber>& shorter = (this->coefficients.size() >= other.coefficients.size())
-                                                 ? other.coefficients
-                                                 : this->coefficients;
 
-    std::vector<RationalNumber> resultCoeffs;
-    resultCoeffs.reserve(longer.size());
-
-    for (size_t i = 0; i < shorter.size(); ++i) {
-        resultCoeffs.push_back(longer.at(i).subtract(shorter.at(i)));
+    std::vector<RationalNumber> otherMinusCoeffs;
+    otherMinusCoeffs.reserve(other.coefficients.size());
+    for (const RationalNumber& pol : other.coefficients) {
+        otherMinusCoeffs.emplace_back(RationalNumber(pol.getIntegerNumerator().negate(), pol.getNaturalDenominator()));
     }
 
-    for (size_t i = shorter.size() ; i < longer.size(); ++i) {
-        resultCoeffs.push_back(longer.at(i));
-    }
-
-    for (size_t i = resultCoeffs.size() - 1; true; --i) {
-        if (!resultCoeffs.at(i).getIntegerNumerator().abs().isNotEqualZero())
-            resultCoeffs.pop_back(); //примнение pop_back корректно, тк мы имеем право удалять только ведущие нули, если коэффицент при наибольшей степени не 0, то даже не рассматриваем оставшиеся
-        else
-            break;
-
-        if (i == 0)
-            break;
-    }
-
-    for (auto & resultCoeff : resultCoeffs) {
-        resultCoeff.reduce();
-    }
-
-    return Polynomial(resultCoeffs);
+    return this->add(Polynomial(otherMinusCoeffs));
 }
 
 //P3: Умножение многочлена на рациональное число
