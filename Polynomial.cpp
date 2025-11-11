@@ -148,7 +148,7 @@ Polynomial Polynomial::makeSquareFree() const {
 	// Находим НОД полинома и его производной
 	Polynomial gcd = this->GCD(derivative);
 	// Делим исходный полином на НОД, чтобы убрать кратные корни
-	return this->quotient(gcd);  // ✅ ПРАВИЛЬНО!
+	return this->quotient(gcd); 
 }
 
 //P7: Вынесение из многочлена НОК знаменателей коэффициентов и НОД числителей
