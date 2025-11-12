@@ -131,8 +131,9 @@ RationalNumber RationalNumber::add(const RationalNumber &other) const {
             );
 
     RationalNumber result(sumOfNumerators, commonDenominator);
+    //Сокращаем полученную дробь
     result.reduce();
-    return result;//хороший вопрос может ли здесь возникнуть ситуация с ведущими нулями, но вроде не может, тк ответсвенность за уничтожение ведущих нулей на IntegerNumber::add
+    return result;
 }
 
 //Q6: Вычитание дробей
@@ -157,36 +158,19 @@ RationalNumber RationalNumber::subtract(const RationalNumber &other) const {
             );
 
     RationalNumber result(diffOfNumerator, commonDenominator);
+    //Сокращаем полученную дробь
     result.reduce();
-    return result;//хороший вопрос может ли здесь возникнуть ситуация с ведущими нулями, но вроде не может, тк ответсвенность за уничтожение ведущих нулей на IntegerNumber::subtract
+    return result;
 }
-#include <chrono>
-#include <iostream>
+
 //Q-7 Умножение рациональных чисел
 RationalNumber RationalNumber::multiply(const RationalNumber& other) const {
     //Пользуемся умножением натуральных и целых чисел
-    auto start = std::chrono::high_resolution_clock::now();
     IntegerNumber intres(this->numerator->multiply(other.getIntegerNumerator()));
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "intres timing:  " << duration.count() << " ms" << std::endl;
-
-    start = std::chrono::high_resolution_clock::now();
     NaturalNumber natres(this->denominator->multiply(other.getNaturalDenominator()));
-    end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "natres timing:  " << duration.count() << " ms" << std::endl;
-
-
-    start = std::chrono::high_resolution_clock::now();
     //Сокращаем полученную дробь
     RationalNumber result(intres, natres);
     result.reduce();
-
-    end = std::chrono::high_resolution_clock::now();
-    duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "reduce timing:  " << duration.count() << " ms" << std::endl;
-
     return result;
 }
 

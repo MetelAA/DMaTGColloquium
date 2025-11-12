@@ -268,14 +268,20 @@ NaturalNumber NaturalNumber::multiplyByPowerOfTen(std::size_t k) const {
     if (this->numbers.size() == 1 && this->numbers[0] == 0)
         return NaturalNumber(std::vector<uint8_t>{0});
 
+    if (this->numbers.size() + k >= SIZE_MAX){
+        throw UniversalStringException("The size of number is greater then " + std::to_string(SIZE_MAX));
+    }
+
     std::vector<uint8_t> res;
-    res.reserve(this->numbers.size() + k);
-
-    // Добавляем k нулей (сдвигаем)
-    for (size_t i = 0; i < k; ++i) res.push_back(0);
-
+    try{
+         res.reserve(this->numbers.size() + k);
+    }catch (const std::bad_alloc& e) {
+        throw UniversalStringException("Not enough memory to multiply by power of ten");
+    }
+    // Добавляем k нулей в начало (сдвигаем)
+    res.insert(res.cend(), k, 0);
     // Добавляем все цифры исходного числа
-    res.insert(res.end(), this->numbers.begin(), this->numbers.end());
+    res.insert(res.cend(), this->numbers.begin(), this->numbers.end());
     return NaturalNumber(res);
 }
 
