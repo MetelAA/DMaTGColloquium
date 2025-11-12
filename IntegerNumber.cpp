@@ -2,6 +2,7 @@
 // Created by Artem on 02.11.2025.
 //
 
+#include <algorithm>
 #include "IntegerNumber.h"
 #include "Exceptions/UniversalStringException.h"
 
@@ -67,14 +68,61 @@ IntegerNumber IntegerNumber::quotient(const IntegerNumber &other) const {
         return IntegerNumber(std::vector<uint8_t>{0}, false);
     }
 
-    IntegerNumber quotient(std::vector<uint8_t>{0}, false); // делаем нулевой контейнер для подсчета ответа
+    // Бинарный поиск частного
+    NaturalNumber left("1");
+    NaturalNumber right = dividend; // Максимально возможное частное
 
-    while (dividend.cmp(&divisor) % 2 == 0) { // пока так, позже прикручу бинпоиск, будет log n
-        dividend = dividend.subtract(divisor);
-        quotient = quotient.add(IntegerNumber(std::vector<uint8_t>{1}, false));
+    NaturalNumber quotient_natural("0");
+
+    while (left.cmp(&right) != 2) { // left <= right
+        // mid = (left + right) / 2
+        NaturalNumber sum = left.add(right);
+
+        // Реализуем деление на 2 через битовые операции (поразрядное деление)
+        std::vector<uint8_t> sum_digits = sum.getNumbers();
+        std::vector<uint8_t> mid_digits;
+        uint8_t carry = 0;
+
+        // Деление в столбик на 2
+        for (int i = sum_digits.size() - 1; i >= 0; i--) {
+            uint16_t current = sum_digits[i] + carry * 10;
+            uint8_t digit = current / 2;
+            carry = current % 2;
+            mid_digits.push_back(digit);
+        }
+        std::reverse(mid_digits.begin(), mid_digits.end());
+
+        // Убираем ведущие нули
+        while (mid_digits.size() > 1 && mid_digits.back() == 0) {
+            mid_digits.pop_back();
+        }
+
+        NaturalNumber mid(mid_digits);
+
+        // product = mid * divisor
+        NaturalNumber product = divisor.multiply(mid);
+
+        int cmp_result = product.cmp(&dividend);
+
+        if (cmp_result == 0) { // product == dividend
+            quotient_natural = mid;
+            break;
+        } else if (cmp_result == 2) { // product > dividend
+            // mid слишком большой, ищем в левой половине
+            NaturalNumber one("1");
+            right = mid.subtract(one);
+        } else { // product < dividend
+            // mid подходит, но может быть большее
+            quotient_natural = mid;
+            NaturalNumber one("1");
+            left = mid.add(one);
+        }
     }
 
-    return this->getSign() != other.getSign() ? quotient.negate() : quotient;
+    // Конвертируем NaturalNumber в IntegerNumber
+    IntegerNumber result(quotient_natural.getNumbers(), false);
+
+    return this->getSign() != other.getSign() ? result.negate() : result;
 }
 
 //Z10: Остаток от деления целого на целое(делитель отличен от нуля)
@@ -99,7 +147,7 @@ IntegerNumber IntegerNumber::remainder(const IntegerNumber &other) const {
     const IntegerNumber quotient = dividend.quotient(divisor);
     const IntegerNumber product = divisor.multiply(quotient);
 
-    return IntegerNumber(dividend.subtract(product).getNumbers(), this->isNegative());;
+    return IntegerNumber(dividend.subtract(product).getNumbers(), (this->isNegative() != other.isNegative()));;
 }
 
 //Z1: Абсолютная величина числа, результат - натуральное
