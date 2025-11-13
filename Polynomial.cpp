@@ -16,24 +16,30 @@ std::string Polynomial::toString() const{
         throw UniversalStringException("atypical behavior, the vector of coefficients should not be empty");
     std::string result;
     NaturalNumber one(std::vector<uint8_t>{1});
-    NaturalNumber zero(std::vector<uint8_t>{0});
+
     for (int i = this->coefficients.size() - 1; i >= 0; --i) {
+
         std::string coeff;
-        if (this->coefficients.at(i).getNaturalDenominator().cmp(&one) == 0 ||
-                this->coefficients.at(i).getIntegerNumerator().abs().cmp(&zero) == 0){
-            coeff = coefficients.at(i).getIntegerNumerator().toString();
+        if (this->coefficients.at(i).getIntegerNumerator().abs().isNotEqualZero()){
+            if (this->coefficients.at(i).getNaturalDenominator().cmp(&one) == 0){
+                coeff = this->coefficients.at(i).getIntegerNumerator().toString();
+            }else{
+                coeff = this->coefficients.at(i).toString();
+            }
         }else{
-            coeff = coefficients.at(i).toString();
+            continue;
         }
 
-        if(i == 0) {
-            result += coeff;
-        }else{
-            result += coeff + "x^" + std::to_string(i);
-        }
 
-        if (i!=0)
+
+        if (i != this->coefficients.size()-1){
             result += " + ";
+        }
+
+        result += coeff;
+        if (i != 0){
+            result += "x^"+std::to_string(i);
+        }
     }
     return result;
 }
