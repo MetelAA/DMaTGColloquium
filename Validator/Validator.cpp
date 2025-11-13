@@ -170,6 +170,11 @@ std::vector<RationalNumber> Validator::validatePolynomial(std::string &number) {
         } catch (UniversalStringException&) {throw;}
     }
 
+    // Удаляем ведущие нули (коэффициенты при старших степенях)
+    while (result.size() > 1 && result.back().toString() == "0/1") {
+        result.pop_back();
+    }
+
     bool allZeros = true;
     for (auto& coeff : result) {
         if (coeff.toString() != "0/1") {
