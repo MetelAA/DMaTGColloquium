@@ -84,8 +84,8 @@ Polynomial Polynomial::remainder(const Polynomial &other) const {
 Polynomial Polynomial::GCD(const Polynomial &other) const {
     // Так как 0 делитя на все, что угодно, мы не можем точно определить НОД
     // Возвращаем константу, так как на нее делится все, но в ней нет корней
-    if(this->getDegree() == 1 && this->coefficients[0].getIntegerNumerator().getSign() == 0 ||
-       other.getDegree() == 1 && other.coefficients[0].getIntegerNumerator().getSign() == 0){
+    if(this->getDegree() == 0 && this->coefficients[0].getIntegerNumerator().getSign() == 0 ||
+       other.getDegree() == 0 && other.coefficients[0].getIntegerNumerator().getSign() == 0){
         throw UniversalStringException("Polynomial::GCD: wrong argument, one of the polynomials is equivalent to 0, it is impossible to uniquely determine the GCD");
     }
 
