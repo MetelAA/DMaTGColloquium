@@ -29,7 +29,9 @@ std::string Polynomial::toString() const{
         }else{
             continue;
         }
-
+        if (coeff[0] == '-'){
+            coeff = coeff.substr(1);
+        }
         if (i != this->coefficients.size()-1){
             result += " ";
             result += this->coefficients.at(i).getIntegerNumerator().getSign() == 2 ? "+" : "-";
