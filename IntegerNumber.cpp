@@ -125,7 +125,7 @@ IntegerNumber IntegerNumber::quotient(const IntegerNumber &other) const {
     return this->getSign() != other.getSign() ? result.negate() : result;
 }
 
-//Z10: Остаток от деления целого на целое(делитель отличен от нуля)
+//Z10: Остаток от деления целого на целое (делитель отличен от нуля)
 IntegerNumber IntegerNumber::remainder(const IntegerNumber &other) const {
     if (other.getSign() == 0) {
         throw UniversalStringException("you cannot divide by zero");
@@ -134,20 +134,26 @@ IntegerNumber IntegerNumber::remainder(const IntegerNumber &other) const {
     const NaturalNumber dividend_abs = this->abs();
     const NaturalNumber divisor_abs = other.abs();
 
+    // Если делимое меньше делителя по модулю
     if (dividend_abs.cmp(&divisor_abs) == 1) {
+        // Если делимое отрицательное, корректируем
+        if (this->isNegative()) {
+            return IntegerNumber(divisor_abs.subtract(dividend_abs).getNumbers(), false);
+        }
         return *this;
     }
 
-    IntegerNumber dividend(*this);
-    IntegerNumber divisor(other);
+    // Вычисляем частное и произведение
+    const IntegerNumber quotient_result = this->quotient(other);
+    const IntegerNumber product = other.multiply(quotient_result);
+    IntegerNumber remainder = this->subtract(product);
 
-    if (dividend.getSign() == 1) dividend = dividend.negate();
-    if (divisor.getSign() == 1) divisor = divisor.negate();
+    // Если остаток отрицательный - корректируем (добавляем |divisor|)
+    if (remainder.isNegative()) {
+        remainder = remainder.add(IntegerNumber(divisor_abs.getNumbers(), false));
+    }
 
-    const IntegerNumber quotient = dividend.quotient(divisor);
-    const IntegerNumber product = divisor.multiply(quotient);
-
-    return IntegerNumber(dividend.subtract(product).getNumbers(), this->isNegative());
+    return remainder;
 }
 
 //Z1: Абсолютная величина числа, результат - натуральное
