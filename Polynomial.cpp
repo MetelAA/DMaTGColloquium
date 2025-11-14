@@ -20,7 +20,7 @@ std::string Polynomial::toString() const{
     for (int i = this->coefficients.size() - 1; i >= 0; --i) {
 
         std::string coeff;
-        if (this->coefficients.at(i).getIntegerNumerator().abs().isNotEqualZero()){
+        if (this->coefficients.at(i).getIntegerNumerator().abs().isNotEqualZero() || (i == 0 && this->coefficients.size() == 1)){
             if (this->coefficients.at(i).getNaturalDenominator().cmp(&one) == 0){
                 coeff = this->coefficients.at(i).getIntegerNumerator().toString();
             }else{
