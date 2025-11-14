@@ -16,6 +16,7 @@ RationalNumber::RationalNumber(const std::string &numeratorA, const std::string 
 }
 
 std::string RationalNumber::toString() const {
+    this->reduce();
     return this->numerator->toString() + "/" + this->denominator->toString();
 }
 
@@ -41,7 +42,7 @@ RationalNumber::RationalNumber(const std::string &s) {
 }
 
 // Q1: сокращение дроби.
-void RationalNumber::reduce() {
+void RationalNumber::reduce() const{
     // Беру модуль числителя, чтобы поиск НОД не вызвал проблем.
     // Далее ищу НОД.
     NaturalNumber numeratorAbs = this->numerator->abs();
@@ -130,10 +131,7 @@ RationalNumber RationalNumber::add(const RationalNumber &other) const {
                     IntegerNumber(numeratorOther.getNumbers(), other.getIntegerNumerator().isNegative())
             );
 
-    RationalNumber result(sumOfNumerators, commonDenominator);
-    //Сокращаем полученную дробь
-    result.reduce();
-    return result;
+    return RationalNumber(sumOfNumerators, commonDenominator);
 }
 
 //Q6: Вычитание дробей
@@ -157,10 +155,7 @@ RationalNumber RationalNumber::subtract(const RationalNumber &other) const {
                     IntegerNumber(numeratorOther.getNumbers(), other.getIntegerNumerator().isNegative())
             );
 
-    RationalNumber result(diffOfNumerator, commonDenominator);
-    //Сокращаем полученную дробь
-    result.reduce();
-    return result;
+    return RationalNumber(diffOfNumerator, commonDenominator);
 }
 
 //Q-7 Умножение рациональных чисел
@@ -168,10 +163,7 @@ RationalNumber RationalNumber::multiply(const RationalNumber& other) const {
     //Пользуемся умножением натуральных и целых чисел
     IntegerNumber intres(this->numerator->multiply(other.getIntegerNumerator()));
     NaturalNumber natres(this->denominator->multiply(other.getNaturalDenominator()));
-    //Сокращаем полученную дробь
-    RationalNumber result(intres, natres);
-    result.reduce();
-    return result;
+    return RationalNumber(intres, natres);;
 }
 
 //Q-8 Деление рациональных чисел
@@ -189,8 +181,5 @@ RationalNumber RationalNumber::division(const RationalNumber& other) const {
     //Так как деление это умножение на обратную дробь, применяем методы умножения
     IntegerNumber intres(this->numerator->multiply(firstmul));
     NaturalNumber natres(this->denominator->multiply(secondmul));
-    //Сокращение дроби
-    RationalNumber result(intres, natres);
-    result.reduce();
-    return result;
+    return RationalNumber(intres, natres);;
 }

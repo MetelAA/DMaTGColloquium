@@ -53,7 +53,7 @@ public:
     std::string toString() const;
     const IntegerNumber& getIntegerNumerator() const noexcept;
     const NaturalNumber& getNaturalDenominator() const noexcept;
-    void reduce();
+    void reduce() const;
     bool isInteger() const;
     IntegerNumber toInteger(const RationalNumber& other) const;
     RationalNumber add(const RationalNumber& other) const;
@@ -62,8 +62,8 @@ public:
     RationalNumber division(const RationalNumber& other) const;
 
 private:
-    IntegerNumber* numerator; //числитель
-    NaturalNumber* denominator;
+    mutable IntegerNumber* numerator; //числитель
+    mutable NaturalNumber* denominator;
 };
 
 
