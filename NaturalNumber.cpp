@@ -315,10 +315,18 @@ NaturalNumber NaturalNumber::multiply(const NaturalNumber &other) const {
     return NaturalNumber(res);
 }
 
+//
+//Герасимов Дмитрий 4385
+//
+
 //N2: Проверка на ноль: если число не равно нулю, то «да» иначе «нет»
 bool NaturalNumber::isNotEqualZero() const {
     return !(numbers.size() == 1 && numbers[0] == 0);
 }
+
+//
+//
+//
 
 // N9: Вычитание из первого числа меньшего числа, умноженного на цифру.
 NaturalNumber NaturalNumber::subtractMultiplied(const NaturalNumber& other, std::size_t c) const {

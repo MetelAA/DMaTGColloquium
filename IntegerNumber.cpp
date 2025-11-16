@@ -156,6 +156,10 @@ IntegerNumber IntegerNumber::remainder(const IntegerNumber &other) const {
     return remainder;
 }
 
+//
+//Герасимов Дмитрий 4385
+//
+
 //Z1: Абсолютная величина числа, результат - натуральное
 NaturalNumber IntegerNumber::abs() const{
     return NaturalNumber(*this->number);
@@ -219,3 +223,7 @@ IntegerNumber IntegerNumber::subtract(const IntegerNumber& other) const {
     IntegerNumber negOther = other.negate();
     return this->add(negOther);
 }
+
+//
+//Герасимов Дмитрий 4385
+//
