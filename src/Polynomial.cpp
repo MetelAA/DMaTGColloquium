@@ -286,8 +286,8 @@ Polynomial Polynomial::quotient(const Polynomial &other) const {
 //P1: Сложение многочленов
 Polynomial Polynomial::add(const Polynomial &other) const {
     const std::vector<RationalNumber>& longer = (this->coefficients.size() >= other.coefficients.size())
-                                                ? this->coefficients
-                                                : other.coefficients;
+                                                 ? this->coefficients
+                                                 : other.coefficients;
     const std::vector<RationalNumber>& shorter = (this->coefficients.size() >= other.coefficients.size())
                                                  ? other.coefficients
                                                  : this->coefficients;
